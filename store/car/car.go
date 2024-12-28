@@ -83,6 +83,7 @@ func (s Store) GetCarByBrand(ctx context.Context, brand string, isEngine bool) (
 	return cars, nil
 }
 
+
 func (s Store) CreateCar(ctx context.Context, carReq *models.CarRequest) (models.Car, error) {
 	var createdCar models.Car
 	var EngineID uuid.UUID
@@ -164,5 +165,47 @@ func (s Store) UpdateCar(ctx context.Context, id int, carReq *models.CarRequest)
 }
 
 func (s Store) DeleteCar(ctx context.Context, id int) (models.Car, error) {
-	// ...
+	var deleteCar models.Car
+
+	tx, err := s.db.BeginTx(ctx, nil)
+	if err != nil {
+		return deleteCar, err
+	}
+
+	defer func() {
+		if err != nil {
+			tx.Rollback()
+			return
+		}
+		err = tx.Commit()
+	}()
+
+	err = tx.QueryRowContext(ctx, "SELECT id, name, year, brand, fuel_type, engine_id, price, created_at, updated_at FROM car WHERE id=$1", id).Scan(&deleteCar.ID, &deleteCar.Name, &deleteCar.Year, &deleteCar.Brand, &deleteCar.FuelType, &deleteCar.Engine.EngineID, &deleteCar.Price, &deleteCar.CreatedAt, &deleteCar.UpdatedAt)
+
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return models.Car{}, errors.New("car not found")
+		}
+
+		return models.Car{}, err
+	}
+
+	result, err := tx.ExecContext(ctx, "DELETE FROM car WHERE id=$1", id)
+
+	if err != nil {
+		return models.Car{}, err
+
+	}
+
+	rowAffected, err := result.RowsAffected()
+
+	if err != nil {
+		return models.Car{}, err
+	}
+
+	if rowAffected == 0 {
+		return models.Car{}, errors.New("no row was deleted")
+	}
+
+	return deleteCar, nil
 }
