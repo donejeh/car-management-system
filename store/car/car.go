@@ -83,7 +83,6 @@ func (s Store) GetCarByBrand(ctx context.Context, brand string, isEngine bool) (
 	return cars, nil
 }
 
-
 func (s Store) CreateCar(ctx context.Context, carReq *models.CarRequest) (models.Car, error) {
 	var createdCar models.Car
 	var EngineID uuid.UUID
@@ -164,6 +163,7 @@ func (s Store) UpdateCar(ctx context.Context, id int, carReq *models.CarRequest)
 	return updatedCar, nil
 }
 
+
 func (s Store) DeleteCar(ctx context.Context, id int) (models.Car, error) {
 	var deleteCar models.Car
 
@@ -190,7 +190,7 @@ func (s Store) DeleteCar(ctx context.Context, id int) (models.Car, error) {
 		return models.Car{}, err
 	}
 
-	result, err := tx.ExecContext(ctx, "DELETE FROM car WHERE id=$1", id)
+	result, err := tx.ExecContext(ctx, "DELETE FROM car WHERE id = $1", id)
 
 	if err != nil {
 		return models.Car{}, err
@@ -204,7 +204,7 @@ func (s Store) DeleteCar(ctx context.Context, id int) (models.Car, error) {
 	}
 
 	if rowAffected == 0 {
-		return models.Car{}, errors.New("no row was deleted")
+		return models.Car{}, errors.New("No row were deleted")
 	}
 
 	return deleteCar, nil
