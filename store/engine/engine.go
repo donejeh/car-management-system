@@ -148,14 +148,6 @@ func (e *EngineStore) DeleteEngine(ctx context.Context, id string) (models.Engin
 
 	var engine models.Engine
 
-	if err != nil {
-		return engine, fmt.Errorf("invalid engine id: %w", err)
-	}
-
-	if err != nil {
-		return models.Engine{}, fmt.Errorf("invalid engine id: %w", err)
-	}
-
 	tx, err := e.db.BeginTx(ctx, nil)
 
 	if err != nil {
