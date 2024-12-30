@@ -125,6 +125,11 @@ func (e *EngineStore) EngineUpdate(ctx context.Context, id string, engineReq *mo
 	}
 
 	rowsAffected, err := result.RowsAffected()
+
+	if err != nil {
+		return models.Engine{}, err
+	}
+
 	if rowsAffected == 0 {
 		return models.Engine{}, errors.New("no rows affected")
 	}
@@ -140,5 +145,61 @@ func (e *EngineStore) EngineUpdate(ctx context.Context, id string, engineReq *mo
 }
 
 func (e *EngineStore) DeleteEngine(ctx context.Context, id string) (models.Engine, error) {
-	// ...
+
+	var engine models.Engine
+
+	if err != nil {
+		return engine, fmt.Errorf("invalid engine id: %w", err)
+	}
+
+	if err != nil {
+		return models.Engine{}, fmt.Errorf("invalid engine id: %w", err)
+	}
+
+	tx, err := e.db.BeginTx(ctx, nil)
+
+	if err != nil {
+		return models.Engine{}, err
+	}
+
+	defer func() {
+		if err != nil {
+			if rbErr := tx.Rollback(); rbErr != nil {
+				fmt.Printf("Error rolling back transaction: %v\n", rbErr)
+			}
+		} else {
+			if CmErr := tx.Commit(); CmErr != nil {
+				fmt.Printf("Error committing transaction: %v\n", CmErr)
+			}
+		}
+	}()
+
+	err = tx.QueryRowContext(ctx, "SELECT id, displacement, no_of_cylinders, car_range FROM engine WHERE id=$1", id).Scan(&engine.EngineID, &engine.Displacement, &engine.NoOfCylinders, &engine.CarRange)
+
+	if err != nil {
+
+		if errors.Is(err, sql.ErrNoRows) {
+			return engine, nil
+		}
+
+		return engine, err
+	}
+
+	result, err := tx.ExecContext(ctx, "DELETE FROM engine WHERE id=$1", id)
+
+	if err != nil {
+		return models.Engine{}, err
+	}
+
+	rowsAffected, err := result.RowsAffected()
+
+	if err != nil {
+		return models.Engine{}, err
+	}
+
+	if rowsAffected == 0 {
+		return models.Engine{}, errors.New("no rows affected")
+	}
+
+	return engine, nil
 }
