@@ -136,7 +136,7 @@ func (s Store) CreateCar(ctx context.Context, carReq *models.CarRequest) (models
 	return createdCar, nil
 }
 
-func (s Store) UpdateCar(ctx context.Context, id int, carReq *models.CarRequest) (models.Car, error) {
+func (s Store) UpdateCar(ctx context.Context, id string, carReq *models.CarRequest) (models.Car, error) {
 	var updatedCar models.Car
 
 	tx, err := s.db.BeginTx(ctx, nil)
