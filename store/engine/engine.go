@@ -144,7 +144,7 @@ func (e *EngineStore) EngineUpdate(ctx context.Context, id string, engineReq *mo
 	return engine, nil
 }
 
-func (e *EngineStore) DeleteEngine(ctx context.Context, id string) (models.Engine, error) {
+func (e *EngineStore) EngineDelete(ctx context.Context, id string) (models.Engine, error) {
 
 	var engine models.Engine
 
@@ -190,7 +190,7 @@ func (e *EngineStore) DeleteEngine(ctx context.Context, id string) (models.Engin
 	}
 
 	if rowsAffected == 0 {
-		return models.Engine{}, errors.New("no rows affected")
+		return models.Engine{}, errors.New("No Rows were affected")
 	}
 
 	return engine, nil
