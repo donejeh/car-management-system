@@ -31,13 +31,13 @@ func (s *EngineService) CreateEngine(ctx context.Context, engineReq *models.Engi
 		return nil, err
 	}
 
-	CreatedEngine, err := s.store.EngineCreate(ctx, engineReq)
+	createdEngine, err := s.store.EngineCreate(ctx, engineReq)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &CreatedEngine, nil
+	return &createdEngine, nil
 }
 
 func (s *EngineService) UpdateEngine(ctx context.Context, id string, engineReq *models.EngineRequest) (*models.Engine, error) {
@@ -46,11 +46,22 @@ func (s *EngineService) UpdateEngine(ctx context.Context, id string, engineReq *
 		return nil, err
 	}
 
-	UpdatedEngine, err := s.store.EngineUpdate(ctx, id, engineReq)
+	updatedEngine, err := s.store.EngineUpdate(ctx, id, engineReq)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return &UpdatedEngine, nil
+	return &updatedEngine, nil
+}
+
+func (s *EngineService) DeleteEngine(ctx context.Context, id string) (*models.Engine, error) {
+
+	deletedEngine, err := s.store.EngineDelete(ctx, id)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &deletedEngine, nil
 }

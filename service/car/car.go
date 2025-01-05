@@ -52,6 +52,7 @@ func (s *CarService) CreateCar(ctx context.Context, carReq *models.CarRequest) (
 }
 
 func (s *CarService) UpdateCar(ctx context.Context, id string, carReq *models.CarRequest) (*models.Car, error) {
+	
 	if err := models.ValidateRequest(*carReq); err != nil {
 		return nil, err
 	}
